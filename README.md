@@ -1,7 +1,17 @@
 # flashcards-cli
 
+Run the following command to export the `COLUMNS` and `LINES` variables
+
 ```bash
-export COLUMNS
+source export.sh
+```
+
+Install the [Decks](https://github.com/HTsuyoshi/jp-flash-decks) with the flashcards
+
+To run the program:
+
+```bash
+./main
 ```
 
 ## Requirements
