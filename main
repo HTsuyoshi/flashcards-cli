@@ -38,7 +38,10 @@ class Game:
 
     set_size:int           = 10
     current_set:int        = 0
-    current_set_words = 0
+    current_set_words:list
+    current_set_words_category:list
+    current_set_words_answer:list
+    current_set_words_right:list
 
     DECK_FOLDER_PATH:str = '/home/azz/.local/share/decks'
 
@@ -139,6 +142,7 @@ class Game:
 
     ### Game ###
     def game(self) -> None:
+        self.deck_df = pd.read_csv(self.deck_path)
         self.print_game()
         action = input(self.INPUT).lower()
         if action == 'n':
@@ -155,27 +159,71 @@ class Game:
     def print_game(self) -> None:
         from wcwidth import wcswidth
         self.current_set_words = self.deck_df['Question'].loc[self.current_set:min(self.current_set + self.set_size, len(self.deck_df))]
+        self.current_set_words_right = self.deck_df['Correct'].loc[self.current_set:min(self.current_set + self.set_size, len(self.deck_df))]
+        self.current_set_words_category = self.deck_df['Category'].loc[self.current_set:min(self.current_set + self.set_size, len(self.deck_df))]
+        self.current_set_words_answer = self.deck_df['Answer'].loc[self.current_set:min(self.current_set + self.set_size, len(self.deck_df))]
 
         options = [f'Current set {self.current_set}/{len(self.deck_df)}',
                 '',
                 '  '.join(self.current_set_words),
-                '  '.join(self.WRONG_ICON.center(wcswidth(word)) for word in self.current_set_words),
+                '  '.join((self.CORRECT_ICON if right else self.WRONG_ICON).center(wcswidth(word)) for word, right in zip(self.current_set_words, self.current_set_words_right)),
                 '',
                 '[N]ext [B]ack [G]o [C]hange Deck']
         self.print_rows(len(options), options)
 
     def play(self):
-        pass
+        from random import shuffle
+        print(self.set_size)
+        print(len(self.deck_df) - self.current_set)
+        list_order = [*range(self.current_set, self.current_set + min(self.set_size, len(self.deck_df) - self.current_set))]
+        shuffle(list_order)
+
+        while len(list_order) > 0:
+            self.print_round(len(list_order), self.current_set_words_category[list_order[0]], self.current_set_words[list_order[0]])
+            action = input(self.INPUT).lower()
+            if action == 's':
+                right = self.print_round_answer(len(list_order), self.current_set_words_category[list_order[0]], self.current_set_words[list_order[0]], self.current_set_words_answer[list_order[0]])
+                if right:
+                    self.deck_df['Correct'][list_order[0]] = 1
+                    self.deck_df.to_csv(self.deck_path)
+                    list_order.pop(0)
+                else:
+                    shuffle(list_order)
+            if action == 'c':
+                break
+
+    def print_round(self, words_left: int, category: str, word: str) -> None:
+        options = [f'Category {category}',
+                '',
+                word,
+                '',
+                f'[S]how Answer [C]hange Set    {words_left} Left']
+        self.print_rows(len(options), options)
+
+    def print_round_answer(self, words_left: int, category: str, word: str, answer: str) -> bool:
+        options = [f'Category {category}',
+                '',
+                word,
+                '',
+                answer,
+                '',
+                f'[D]idn\'t know [K]new    {words_left} Left']
+        self.print_rows(len(options), options)
+
+        while 1:
+            action = input(self.INPUT).lower()
+            if action == 'k':
+                return True
+            elif action == 'd':
+                return False
+
+        return True
 
     ### Config ###
     def config(self) -> None:
         pass
 
     def print_config(self, deck_list: list[str]) -> None:
-        pass
-
-    #TODO
-    def print_set(self) -> None:
         pass
 
     def print_rows(self, options_quantity: int, options: list[str]) -> None:
