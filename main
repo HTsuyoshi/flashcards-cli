@@ -1,0 +1,214 @@
+#!/bin/python3
+
+import argparse
+
+parser = argparse.ArgumentParser(
+        description='Flashcards\n'
+        )
+
+parser.add_argument( 'deck',
+        help='A csv file used to play the game',
+        type=int
+        )
+
+import pandas as pd
+import os
+import enum
+
+class State(enum.Enum):
+    menu      = 0
+    set_deck  = 1
+    playing   = 2
+    config    = 3
+
+class Game_mode(enum.Enum):
+    bySets = 0
+    sm2plus = 1
+
+class Game:
+    state:State         = State.menu
+    game_mode:Game_mode = Game_mode.bySets
+    invalid:bool        = False
+
+    width:int  = int(os.environ['COLUMNS'])
+    height:int = int(os.environ['LINES'])
+
+    deck_path:str        = ''
+    deck_df:pd.DataFrame
+
+    set_size:int           = 10
+    current_set:int        = 0
+    current_set_words = 0
+
+    DECK_FOLDER_PATH:str = '/home/azz/.local/share/decks'
+
+    #UNDERLINE:str = '\u001b[4m'
+    #BOLD:str      = '\u001b[1m'
+    #GREEN:str     = '\u001b[32m'
+    #RED:str       = '\u001b[31m'
+    #RESET:str     = '\u001b[0m'
+    CLEAR:str     = '\u001b[H\u001b[2J'
+
+    WRONG_ICON:str   = ''
+    CORRECT_ICON:str = ''
+
+    INPUT:str         = '> '
+    INVALID_INPUT:str = 'Invalid input'
+
+    BOX_V:str  = '│'
+    BOX_H:str  = '─'
+    BOX_UL:str = '┌'
+    BOX_UR:str = '┐'
+    BOX_BR:str = '┘'
+    BOX_BL:str = '└'
+
+    def __init__(self, deck_path: str) -> None:
+        self.deck_path = deck_path
+        while 1:
+            self.loop()
+
+    def loop(self) -> None:
+        print(self.CLEAR)
+        if self.state == State.menu:
+            self.menu()
+        elif self.state == State.set_deck:
+            self.set_deck()
+        elif self.state == State.playing:
+            self.game()
+        elif self.state == State.config:
+            self.config()
+
+    # Fix realtime env variables
+    def get_window_size(self) -> tuple[int, int]:
+        return (int(os.environ['COLUMNS']), int(os.environ['LINES']))
+
+    ### Main menu ###
+    def menu(self) -> None:
+        self.print_menu()
+        mode = input(self.INPUT).lower()
+        if mode == 'e':
+            self.state = State.playing
+        elif mode == 's':
+            self.state = State.set_deck
+        elif mode == 'c':
+            self.state = State.config
+        elif mode == 'q':
+            exit(0)
+        else:
+            self.invalid = True
+
+    def print_menu(self) -> None:
+        options = ['SUPER FLASHCARDS CARALHO',
+                '',
+                f'Current deck: {self.deck_path}',
+                '',
+                '[E]nter the game',
+                '[S]elect deck',
+                '[C]onfig',
+                '[Q]uit']
+
+        if self.invalid == True:
+            options.extend(['', self.INVALID_INPUT])
+            self.invalid = False
+
+        self.print_rows(len(options), options)
+
+    ### Set deck ###
+    def set_deck(self) -> None:
+        if not os.path.isdir(self.DECK_FOLDER_PATH):
+            os.mkdir(self.DECK_FOLDER_PATH)
+
+        deck_list = os.listdir(self.DECK_FOLDER_PATH)
+        self.print_set_deck(deck_list)
+
+        chosen_deck = input(self.INPUT)
+        if chosen_deck.isnumeric():
+            if int(chosen_deck) >= len(deck_list):
+                self.invalid = True
+            else:
+                self.deck_path = os.path.join(self.DECK_FOLDER_PATH, deck_list[int(chosen_deck)])
+                self.deck_df = pd.read_csv(self.deck_path)
+                self.state = State.menu
+
+    def print_set_deck(self, deck_list: list[str]) -> None:
+        deck_list_enum = ([*(f'{k} - {v}' for k, v in enumerate(deck_list))])
+        deck_list_enum.insert(0, 'The following files are avaliable:')
+        if self.invalid == True:
+            deck_list_enum.insert(0, self.INVALID_INPUT)
+        self.print_rows(len(deck_list_enum), deck_list_enum)
+
+    ### Game ###
+    def game(self) -> None:
+        self.print_game()
+        action = input(self.INPUT).lower()
+        if action == 'n':
+            if self.current_set < len(self.deck_df):
+                self.current_set += self.set_size
+        elif action == 'b':
+            if self.current_set - self.set_size >= 0:
+                self.current_set -= self.set_size
+        elif action == 'g':
+            self.play()
+        elif action == 'c':
+            self.state = State.menu
+
+    def print_game(self) -> None:
+        from wcwidth import wcswidth
+        self.current_set_words = self.deck_df['Question'].loc[self.current_set:min(self.current_set + self.set_size, len(self.deck_df))]
+
+        options = [f'Current set {self.current_set}/{len(self.deck_df)}',
+                '',
+                '  '.join(self.current_set_words),
+                '  '.join(self.WRONG_ICON.center(wcswidth(word)) for word in self.current_set_words),
+                '',
+                '[N]ext [B]ack [G]o [C]hange Deck']
+        self.print_rows(len(options), options)
+
+    def play(self):
+        pass
+
+    ### Config ###
+    def config(self) -> None:
+        pass
+
+    def print_config(self, deck_list: list[str]) -> None:
+        pass
+
+    #TODO
+    def print_set(self) -> None:
+        pass
+
+    def print_rows(self, options_quantity: int, options: list[str]) -> None:
+        screen = ''
+
+        width_ratio = 0.8
+
+        border_ratio = 0.20
+        border_up = int(self.height * border_ratio) + int(self.height % (border_ratio ** -1))
+        border_down = int(self.height * border_ratio)
+
+        padding_ratio = 0.5 - border_ratio
+        padding_rows_up = int(self.height*padding_ratio) - (options_quantity // 2 + options_quantity % 2) - 1
+        padding_rows_down = int(self.height*padding_ratio) - options_quantity // 2 - 1
+
+        #│ text │ function
+        def center_text(text: str, border: tuple[str, str]):
+            from wcwidth import wcswidth
+            asian_char = wcswidth(text) - len(text) # 2-wide characters
+            text_width = int(self.width * width_ratio) - asian_char
+            screen_width = self.width - asian_char
+            return f'{" " if asian_char % 2 == 1 else ""}{border[0]}{text.center(text_width)}{border[1]}'.center(screen_width)
+
+        screen += '\n' * (border_up)                                                                         # border
+        screen += center_text(self.BOX_H * int(self.width * width_ratio), (self.BOX_UL, self.BOX_UR))        # ┌──────┐ 1 row
+        screen += center_text('', (self.BOX_V, self.BOX_V)) * (padding_rows_up)                              # │      │ padding
+        screen += ''.join(center_text(option, (self.BOX_V, self.BOX_V)) for option in options)               # │ text │ options
+        screen += center_text('', (self.BOX_V, self.BOX_V)) * (padding_rows_down)                            # │      │ padding
+        screen += center_text(self.BOX_H * int(self.width * width_ratio), (self.BOX_BL, self.BOX_BR))        # └──────┘ 1 row
+        screen += '\n' * (border_down - 1)                                                                   # border
+
+        print(screen)
+
+if __name__ == '__main__':
+    deck_path= '~/.local/share/decks/example.csv'
+    Game(deck_path)
