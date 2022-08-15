@@ -17,8 +17,9 @@ To run the program:
 ## Requirements
 
 argparse
-csv
+pandas
 wcwidth
+re
 
 ## TODO
 
