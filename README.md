@@ -26,5 +26,5 @@ To run the program:
 - Get realtime `COLUMNS` and `LINES`
 - Split types of algotihms in other classes
 - Possibility to change sets size
-- Dockerfile
+- Dockerfile with `COLUMNS` and `LINES` variables shared
 - [SM2+](http://www.blueraja.com/blog/477/a-better-spaced-repetition-learning-algorithm-sm2)
