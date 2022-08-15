@@ -23,7 +23,7 @@ To run the program:
 
 ## TODO
 
-- Get realtime COLUMNS and LINES
+- Get realtime `COLUMNS` and `LINES`
 - Split types of algotihms in other classes
 - Possibility to change sets size
 - Dockerfile
