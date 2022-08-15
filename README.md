@@ -16,17 +16,15 @@ To run the program:
 
 ## Requirements
 
-argparse
-pandas
-wcwidth
-re
+- `argparse`
+- `pandas`
+- `wcwidth`
+- `re`
 
 ## TODO
 
 - Get realtime COLUMNS and LINES
-- Study in sets of 5 Kanji/Vocabulary
-- Check sets learned as done
-- Colors (Icons and deck set or not)
+- Split types of algotihms in other classes
+- Possibility to change sets size
 - Dockerfile
-- Verify and create ~/.local/share/decks
 - [SM2+](http://www.blueraja.com/blog/477/a-better-spaced-repetition-learning-algorithm-sm2)
