@@ -1,5 +1,37 @@
 # flashcards-cli
 
+A simple script that reads a .csv file and presents flashcards inside the terminal.
+
+![Sample](./assets/sample.gif)
+
+There are a few ways to run it:
+
+- [Docker](#run-\(docker\))
+- [Local machine](#run)
+
+## Run (Docker)
+
+Create the `flascard` image:
+
+```sh
+make build
+```
+
+Run the `flascard` image:
+
+```sh
+make
+```
+
+## Run
+
+#### Requirements
+
+- `argparse`
+- `pandas`
+- `wcwidth`
+- `re`
+
 Run the following command to export the `COLUMNS` and `LINES` variables
 
 ```bash
@@ -11,15 +43,8 @@ Install the [Decks](https://github.com/HTsuyoshi/jp-flash-decks) with the flashc
 To run the program:
 
 ```bash
-./main
+python3 flascards.py
 ```
-
-## Requirements
-
-- `argparse`
-- `pandas`
-- `wcwidth`
-- `re`
 
 ## TODO
 

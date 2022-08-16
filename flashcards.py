@@ -228,7 +228,7 @@ class Game:
         for word, right in zip(self.current_set_words, self.current_set_words_right):
             from wcwidth import wcswidth
             correct = apply_green(Icons.CORRECT_ICON.value)
-            wrong = apply_green(Icons.WRONG_ICON.value)
+            wrong = apply_red(Icons.WRONG_ICON.value)
 
             if right:
                 current_set_icons.append(correct.center(wcswidth(word) + self.ansi_len(correct)))
@@ -397,11 +397,11 @@ class Game:
             return f'{border[0]}{text.center(final_text_width)}{border[1]}'.center(screen_width)
 
         screen += '\n' * (border_up)                                                                           # border
-        screen += center_text(Icons.BOX_H.value * text_width, (Icons.BOX_UL.value, Icons.BOX_UR.value))        # ┌──────┐ 1 row
-        screen += center_text('', (Icons.BOX_V.value, Icons.BOX_V.value)) * (padding_rows_up)                  # │      │ padding
-        screen += ''.join(center_text(option, (Icons.BOX_V.value, Icons.BOX_V.value)) for option in options)   # │ text │ options
-        screen += center_text('', (Icons.BOX_V.value, Icons.BOX_V.value)) * (padding_rows_down)                # │      │ padding
-        screen += center_text(Icons.BOX_H.value * text_width, (Icons.BOX_BL.value, Icons.BOX_BR.value))        # └──────┘ 1 row
+        screen += center_text(Icons.BOX_H.value * text_width, (Icons.BOX_UL.value, Icons.BOX_UR.value)) + '\n'        # ┌──────┐ 1 row
+        screen += (center_text('', (Icons.BOX_V.value, Icons.BOX_V.value)) + '\n') * (padding_rows_up)                  # │      │ padding
+        screen += ''.join(center_text(option, (Icons.BOX_V.value, Icons.BOX_V.value)) + '\n' for option in options)   # │ text │ options
+        screen += (center_text('', (Icons.BOX_V.value, Icons.BOX_V.value)) + '\n') * (padding_rows_down)                # │      │ padding
+        screen += center_text(Icons.BOX_H.value * text_width, (Icons.BOX_BL.value, Icons.BOX_BR.value)) + '\n'        # └──────┘ 1 row
         screen += '\n' * (border_down - 1)                                                                     # border
 
         print(screen)
