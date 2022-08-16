@@ -105,7 +105,7 @@ class Game:
     current_set_words_answer:list
     current_set_words_right:list
 
-    DECK_FOLDER_PATH:str = '/home/azz/.local/share/decks'
+    DECK_FOLDER_PATH:str = '/usr/src/app/decks'
 
     INVALID_INPUT:str = 'Invalid input'
     DECK_ERROR:str    = 'Deck does\'nt exist'
