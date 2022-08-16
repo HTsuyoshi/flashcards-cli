@@ -54,8 +54,7 @@ python3 flascards.py
 
 ## TODO
 
-- Get realtime `COLUMNS` and `LINES`
-- Split types of algotihms in other classes
-- Possibility to change sets size
-- Dockerfile with `COLUMNS` and `LINES` variables shared
-- [SM2+](http://www.blueraja.com/blog/477/a-better-spaced-repetition-learning-algorithm-sm2)
+- [ ] Refactor the code
+- [ ] Get realtime `COLUMNS` and `LINES`
+- [ ] Split types of algotihms (Sets and SM2+) in other classes
+- [ ] Implement [SM2+](http://www.blueraja.com/blog/477/a-better-spaced-repetition-learning-algorithm-sm2)
