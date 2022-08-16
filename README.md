@@ -11,6 +11,12 @@ There are a few ways to run it:
 
 ## Run (Docker)
 
+Export the `COLUMNS` and `LINES` variables:
+
+```sh
+source export.sh
+```
+
 Create the `flascard` image:
 
 ```sh
@@ -34,7 +40,7 @@ make
 
 Run the following command to export the `COLUMNS` and `LINES` variables
 
-```bash
+```sh
 source export.sh
 ```
 
@@ -42,7 +48,7 @@ Install the [Decks](https://github.com/HTsuyoshi/jp-flash-decks) with the flashc
 
 To run the program:
 
-```bash
+```sh
 python3 flascards.py
 ```
 
