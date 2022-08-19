@@ -37,6 +37,7 @@ make
 - `pandas`
 - `wcwidth`
 - `re`
+- `colorama`
 
 Run the following command to export the `COLUMNS` and `LINES` variables
 
