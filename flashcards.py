@@ -17,7 +17,7 @@ parser.add_argument(
         help='To use the flashcards you will need a .csv file with the'
              ' flashcards. The .csv have the following columns:'
              ' Category, Question, Answer, Correct',
-        default='~/.local/share/decks',
+        default='/usr/src/app/decks',
         type=str)
 
 parser.add_argument(
@@ -127,9 +127,8 @@ class GameScreen:
             ]
 
     @classmethod
-    # TODO: Realtime env variables
     def get_window_size(cls) -> tuple[int, int]:
-        return (int(os.environ['COLUMNS']), int(os.environ['LINES']))
+        return (int(os.get_terminal_size().columns), int(os.get_terminal_size().lines))
 
     @classmethod
     def ansi_len(cls, text: str) -> int:
@@ -380,14 +379,13 @@ class Game:
     invalid: bool = False
     deck_error: bool = False
 
-    #deck_path: str = '/usr/src/app/decks'
-    #deck_folder: str = '/usr/src/app/decks'
     deck_path: str = ''
-    deck_folder: str = '/home/azz/.local/share/decks'
+    deck_folder: str = ''
     deck_df: pd.DataFrame
 
-    def __init__(self, deck_folder: str) -> None:
-        Game.deck_path = deck_folder
+    def __init__(self, two_wide_font: bool, deck_folder: str) -> None:
+        GameScreen.two_wide_font = two_wide_font
+        Game.deck_folder = deck_folder
         while 1:
             self.loop()
 
@@ -502,5 +500,4 @@ class Game:
 
 if __name__ == '__main__':
     args = parser.parse_args()
-    GameScreen.two_wide_font = args.font
-    Game(args.deck)
+    Game(args.font, args.deck)

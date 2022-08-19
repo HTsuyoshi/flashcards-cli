@@ -55,6 +55,5 @@ python3 flascards.py
 ## TODO
 
 - [ ] Refactor the code
-- [ ] Get realtime `COLUMNS` and `LINES`
 - [ ] Split types of algotihms (Sets and SM2+) in other classes
 - [ ] Implement [SM2+](http://www.blueraja.com/blog/477/a-better-spaced-repetition-learning-algorithm-sm2)
