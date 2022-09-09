@@ -465,4 +465,3 @@ class Game:
             return
 
         Logic.set_size = int(set_size)
-
