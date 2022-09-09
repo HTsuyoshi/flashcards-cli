@@ -40,7 +40,7 @@ class State(Enum):
     quit = 'q'
 
 
-class Game_mode(Enum):
+class Mode(Enum):
     bySets = 0
     sm2plus = 1
 
@@ -67,7 +67,7 @@ class GameLogic:
     set_index: int = 0
     correct_answers: int = 0
     wrong_answers: int = 0
-    game_mode: Game_mode = Game_mode.bySets
+    Mode: Mode = Mode.bySets
     current_set: pd.DataFrame
 
     @classmethod
@@ -354,7 +354,7 @@ class GameScreen:
         options = [
             'Configuration',
             '',
-            f'Algorithm: {GameLogic.game_mode}',
+            f'Algorithm: {GameLogic.Mode}',
             f'Set size: {GameLogic.set_size}',
             ''
             ]
@@ -478,7 +478,7 @@ class Game:
         GameScreen.print_learning_algorithms()
         action = input(Icons.INPUT.value).lower()
         try:
-            Game.game_mode = Game_mode(action)
+            Game.Mode = Mode(action)
         except Exception:
             Game.invalid = True
 
