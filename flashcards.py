@@ -40,12 +40,12 @@ class State(Enum):
     quit = 'q'
 
 
-class Game_mode(Enum):
+class Mode(Enum):
     bySets = 0
     sm2plus = 1
 
 
-class Icons(Enum):
+class Icon(Enum):
     WRONG = f'{Fore.RED}{Fore.RESET}'
     CORRECT = f'{Fore.GREEN}{Fore.RESET}'
     INPUT = '> '
@@ -57,48 +57,48 @@ class Icons(Enum):
     BOX_BL = '└'
 
 
-class Algorithms(Enum):
+class Algorithm(Enum):
     SETS = 0
     SM2P = 1
 
 
-class GameLogic:
+class Logic:
     set_size: int = 10
     set_index: int = 0
     correct_answers: int = 0
     wrong_answers: int = 0
-    game_mode: Game_mode = Game_mode.bySets
+    Mode: Mode = Mode.bySets
     current_set: pd.DataFrame
 
     @classmethod
     def play(cls):
         list_order = [
-            *range(GameLogic.set_index,
-                GameLogic.set_index
-                + min(GameLogic.set_size,
-                      len(Game.deck_df) - GameLogic.set_index)
+            *range(Logic.set_index,
+                Logic.set_index
+                + min(Logic.set_size,
+                      len(Game.deck_df) - Logic.set_index)
             )]
         already_answered = []
 
-        GameLogic.correct_answers, GameLogic.wrong_answers = 0, 0
+        Logic.correct_answers, Logic.wrong_answers = 0, 0
         shuffle(list_order)
 
         while len(list_order) > 0:
             next_word = list_order[0]
-            GameScreen.print_round(len(list_order),
-                                   GameLogic.current_set['Category'][next_word],
-                                   GameLogic.current_set['Question'][next_word])
+            Screen.print_round(len(list_order),
+                                   Logic.current_set['Category'][next_word],
+                                   Logic.current_set['Question'][next_word])
 
-            action = input(Icons.INPUT.value).lower()
+            action = input(Icon.INPUT.value).lower()
             if action == 's':
-                right = GameScreen.print_round_answer(
-                        GameLogic.current_set['Category'][next_word],
-                        GameLogic.current_set['Question'][next_word],
-                        GameLogic.current_set['Answer'][next_word]
+                right = Screen.print_round_answer(
+                        Logic.current_set['Category'][next_word],
+                        Logic.current_set['Question'][next_word],
+                        Logic.current_set['Answer'][next_word]
                         )
                 if right:
                     if next_word not in already_answered:
-                        GameLogic.correct_answers += 1
+                        Logic.correct_answers += 1
                         already_answered.append(next_word)
                     Game.deck_df['Correct'][next_word] = 1
                     Game.deck_df.to_csv(Game.deck_path, index=False)
@@ -106,14 +106,14 @@ class GameLogic:
                     continue
 
                 if next_word not in already_answered:
-                    GameLogic.wrong_answers += 1
+                    Logic.wrong_answers += 1
                     already_answered.append(next_word)
                 shuffle(list_order)
             if action == 'c':
                 break
 
 
-class GameScreen:
+class Screen:
     two_wide_font: bool = True
 
     INVALID_INPUT: str = 'Invalid input'
@@ -133,7 +133,7 @@ class GameScreen:
     @classmethod
     def ansi_len(cls, text: str) -> int:
         ansi_char = 0
-        for effect in GameScreen.EFFECTS:
+        for effect in Screen.EFFECTS:
             from re import findall
             all = findall(effect, text)
             if all != []:
@@ -142,7 +142,7 @@ class GameScreen:
 
     @classmethod
     def ansi_exist(cls, text: str) -> bool:
-        for effect in GameScreen.EFFECTS:
+        for effect in Screen.EFFECTS:
             from re import match
             if match(effect, text):
                 return True
@@ -150,7 +150,7 @@ class GameScreen:
 
     @classmethod
     def ansi_remove(cls, text: str) -> str:
-        for effect in GameScreen.EFFECTS:
+        for effect in Screen.EFFECTS:
             from re import sub
             text = sub(effect, '', text)
         return text
@@ -158,7 +158,7 @@ class GameScreen:
     @classmethod
     def print_rows(cls, options: list[str]) -> None:
         options_quantity = len(options)
-        width, height = GameScreen.get_window_size()
+        width, height = Screen.get_window_size()
 
         screen = ''
         width_ratio = 0.9
@@ -174,12 +174,12 @@ class GameScreen:
         # │ text │ function
         def center_text(text: str, border: tuple[str, str]) -> str:
             asian_char = 0
-            no_ansi_text = GameScreen.ansi_remove(text)
+            no_ansi_text = Screen.ansi_remove(text)
             asian_char = 0
-            if GameScreen.two_wide_font and \
+            if Screen.two_wide_font and \
                 wcswidth(no_ansi_text) > len(no_ansi_text):
                 asian_char = wcswidth(no_ansi_text) - len(no_ansi_text) # 2-wide characters
-            ansi_char = GameScreen.ansi_len(text)
+            ansi_char = Screen.ansi_len(text)
             final_text_width = text_width - asian_char + ansi_char
             screen_width = width - asian_char + ansi_char
             return f'{border[0]}{text.center(final_text_width)}{border[1]}' \
@@ -194,11 +194,11 @@ class GameScreen:
         # border
 
         screen += '\n' * (border)
-        screen += center_text(Icons.BOX_H.value * text_width, (Icons.BOX_UL.value, Icons.BOX_UR.value)) + '\n'
-        screen += (center_text('', (Icons.BOX_V.value, Icons.BOX_V.value)) + '\n') * (padding_up - 1)
-        screen += ''.join(center_text(option, (Icons.BOX_V.value, Icons.BOX_V.value)) + '\n' for option in options)
-        screen += (center_text('', (Icons.BOX_V.value, Icons.BOX_V.value)) + '\n') * (padding_down - 1)
-        screen += center_text(Icons.BOX_H.value * text_width, (Icons.BOX_BL.value, Icons.BOX_BR.value)) + '\n'
+        screen += center_text(Icon.BOX_H.value * text_width, (Icon.BOX_UL.value, Icon.BOX_UR.value)) + '\n'
+        screen += (center_text('', (Icon.BOX_V.value, Icon.BOX_V.value)) + '\n') * (padding_up - 1)
+        screen += ''.join(center_text(option, (Icon.BOX_V.value, Icon.BOX_V.value)) + '\n' for option in options)
+        screen += (center_text('', (Icon.BOX_V.value, Icon.BOX_V.value)) + '\n') * (padding_down - 1)
+        screen += center_text(Icon.BOX_H.value * text_width, (Icon.BOX_BL.value, Icon.BOX_BR.value)) + '\n'
         screen += '\n' * (border - 1)
 
         print(screen)
@@ -221,37 +221,37 @@ class GameScreen:
             ])
 
         if Game.invalid:
-            options.extend(['', GameScreen.INVALID_INPUT])
+            options.extend(['', Screen.INVALID_INPUT])
             Game.invalid = False
 
         if Game.deck_error:
-            options.extend(['', GameScreen.DECK_ERROR])
+            options.extend(['', Screen.DECK_ERROR])
             Game.deck_error = False
 
-        GameScreen.print_rows(options)
+        Screen.print_rows(options)
 
 
     @classmethod
     def print_game_menu(cls) -> None:
-        last: int = min(GameLogic.set_index
-                        + GameLogic.set_size, len(Game.deck_df)) - 1
-        GameLogic.current_set = Game.deck_df.loc[GameLogic.set_index: last]
+        last: int = min(Logic.set_index
+                        + Logic.set_size, len(Game.deck_df)) - 1
+        Logic.current_set = Game.deck_df.loc[Logic.set_index: last]
 
         set_indexcons = []
-        for word, right in zip(GameLogic.current_set['Question'],
-                               GameLogic.current_set['Correct']):
+        for word, right in zip(Logic.current_set['Question'],
+                               Logic.current_set['Correct']):
 
             if right:
-                set_indexcons.append(Icons.CORRECT.value.center(wcswidth(word)
-                    + GameScreen.ansi_len(Icons.CORRECT.value)))
+                set_indexcons.append(Icon.CORRECT.value.center(wcswidth(word)
+                    + Screen.ansi_len(Icon.CORRECT.value)))
             else:
-                set_indexcons.append(Icons.WRONG.value.center(wcswidth(word)
-                    + GameScreen.ansi_len(Icons.CORRECT.value)))
+                set_indexcons.append(Icon.WRONG.value.center(wcswidth(word)
+                    + Screen.ansi_len(Icon.CORRECT.value)))
 
         options = [
-            f'Current set {GameLogic.set_index}/{len(Game.deck_df)}',
+            f'Current set {Logic.set_index}/{len(Game.deck_df)}',
             '',
-            '  '.join(GameLogic.current_set['Question']),
+            '  '.join(Logic.current_set['Question']),
             '  '.join(set_indexcons),
             '',
             ]
@@ -262,10 +262,10 @@ class GameScreen:
             '[G]o [C]hange Deck',
             ])
         options.extend([
-            f'{GameLogic.correct_answers}/{GameLogic.set_size}'
+            f'{Logic.correct_answers}/{Logic.set_size}'
             ])
 
-        GameScreen.print_rows(options)
+        Screen.print_rows(options)
 
 
     @classmethod
@@ -283,11 +283,11 @@ class GameScreen:
             '',
             ])
         options.extend([
-            f'Correct: {GameLogic.correct_answers} '
-            f'Wrong: {GameLogic.wrong_answers}',
+            f'Correct: {Logic.correct_answers} '
+            f'Wrong: {Logic.wrong_answers}',
             f'Left: {words_left}'
             ])
-        GameScreen.print_rows(options)
+        Screen.print_rows(options)
 
 
     @classmethod
@@ -305,16 +305,16 @@ class GameScreen:
             '[D]idn\'t know'
             '[K]new'
             ])
-        GameScreen.print_rows(options)
+        Screen.print_rows(options)
 
         while 1:
-            action = input(Icons.INPUT.value).lower()
+            action = input(Icon.INPUT.value).lower()
             if action == 'k':
                 return True
             elif action == 'd':
                 return False
             else:
-                GameScreen.print_rows(options)
+                Screen.print_rows(options)
 
         return True
 
@@ -325,10 +325,10 @@ class GameScreen:
         options.extend([*(ansi_mag(f'[{str(k)}] {v}')
                           for k, v in enumerate(deck_list))])
         if Game.invalid:
-            options.extend(['', GameScreen.INVALID_INPUT])
+            options.extend(['', Screen.INVALID_INPUT])
             Game.invalid = False
 
-        GameScreen.print_rows(options)
+        Screen.print_rows(options)
 
 
     @classmethod
@@ -344,18 +344,18 @@ class GameScreen:
             ])
 
         if Game.invalid:
-            options.extend(['', GameScreen.INVALID_INPUT])
+            options.extend(['', Screen.INVALID_INPUT])
             Game.invalid = False
 
-        GameScreen.print_rows(options)
+        Screen.print_rows(options)
 
     @classmethod
     def print_config(cls) -> None:
         options = [
             'Configuration',
             '',
-            f'Algorithm: {GameLogic.game_mode}',
-            f'Set size: {GameLogic.set_size}',
+            f'Algorithm: {Logic.Mode}',
+            f'Set size: {Logic.set_size}',
             ''
             ]
         options.extend(
@@ -366,10 +366,10 @@ class GameScreen:
             ])
 
         if Game.invalid:
-            options.extend(['', GameScreen.INVALID_INPUT])
+            options.extend(['', Screen.INVALID_INPUT])
             Game.invalid = False
 
-        GameScreen.print_rows(options)
+        Screen.print_rows(options)
 
 
 class Game:
@@ -384,7 +384,7 @@ class Game:
     deck_df: pd.DataFrame
 
     def __init__(self, two_wide_font: bool, deck_folder: str) -> None:
-        GameScreen.two_wide_font = two_wide_font
+        Screen.two_wide_font = two_wide_font
         Game.deck_folder = deck_folder
         while 1:
             self.loop()
@@ -403,8 +403,8 @@ class Game:
 
     # Main menu
     def menu(self) -> None:
-        GameScreen.print_menu()
-        action = input(Icons.INPUT.value).lower()
+        Screen.print_menu()
+        action = input(Icon.INPUT.value).lower()
         try:
             Game.state = State(action)
         except Exception:
@@ -416,9 +416,9 @@ class Game:
             os.mkdir(Game.deck_folder)
 
         deck_list = os.listdir(Game.deck_folder)
-        GameScreen.print_set_deck(deck_list)
+        Screen.print_set_deck(deck_list)
 
-        chosen_deck = input(Icons.INPUT.value)
+        chosen_deck = input(Icon.INPUT.value)
         if not chosen_deck.isnumeric():
             Game.invalid = True
             return
@@ -446,16 +446,16 @@ class Game:
             Game.state = State.menu
             return
 
-        GameScreen.print_game_menu()
-        action = input(Icons.INPUT.value).lower()
+        Screen.print_game_menu()
+        action = input(Icon.INPUT.value).lower()
         if action == 'n':
-            if GameLogic.set_index < len(Game.deck_df):
-                GameLogic.set_index += GameLogic.set_size
+            if Logic.set_index < len(Game.deck_df):
+                Logic.set_index += Logic.set_size
         elif action == 'b':
-            if GameLogic.set_index - GameLogic.set_size >= 0:
-                GameLogic.set_index -= GameLogic.set_size
+            if Logic.set_index - Logic.set_size >= 0:
+                Logic.set_index -= Logic.set_size
         elif action == 'g':
-            GameLogic.play()
+            Logic.play()
         elif action == 'c':
             Game.state = State.menu
         else:
@@ -463,8 +463,8 @@ class Game:
 
     # Config
     def config(self) -> None:
-        GameScreen.print_config()
-        action = input(Icons.INPUT.value).lower()
+        Screen.print_config()
+        action = input(Icon.INPUT.value).lower()
         if action == 's':
             self.set_set_size()
         elif action == 'l':
@@ -475,18 +475,18 @@ class Game:
             Game.invalid = True
 
     def learning_algorithms(self):
-        GameScreen.print_learning_algorithms()
-        action = input(Icons.INPUT.value).lower()
+        Screen.print_learning_algorithms()
+        action = input(Icon.INPUT.value).lower()
         try:
-            Game.game_mode = Game_mode(action)
+            Game.Mode = Mode(action)
         except Exception:
             Game.invalid = True
 
     def set_set_size(self) -> None:
         options = ['New size:']
-        GameScreen.print_rows(options)
+        Screen.print_rows(options)
 
-        set_size = input(Icons.INPUT.value)
+        set_size = input(Icon.INPUT.value)
         if not set_size.isnumeric():
             Game.invalid = True
             return
@@ -495,7 +495,7 @@ class Game:
             Game.invalid = True
             return
 
-        GameLogic.set_size = int(set_size)
+        Logic.set_size = int(set_size)
 
 
 if __name__ == '__main__':
