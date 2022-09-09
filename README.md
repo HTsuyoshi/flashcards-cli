@@ -7,23 +7,29 @@ A simple script that reads a .csv file and presents flashcards inside the termin
 There are a few ways to run it:
 
 - [Docker](#run-\(docker\))
-- [Local machine](#run)
+- [Host machine](#run-\(host\))
 
 ## Run (Docker)
 
-Create the `flascard` image:
+Create the `flashcard` image:
 
 ```sh
 make build
 ```
 
-Run the `flascard` image:
+Run the `flashcard` image:
 
 ```sh
-make
+make start
 ```
 
-## Run
+Erasing the image:
+
+```sh
+make clean
+```
+
+## Run (host)
 
 #### Requirements
 
