@@ -45,7 +45,7 @@ class Mode(Enum):
     sm2plus = 1
 
 
-class Icons(Enum):
+class Icon(Enum):
     WRONG = f'{Fore.RED}{Fore.RESET}'
     CORRECT = f'{Fore.GREEN}{Fore.RESET}'
     INPUT = '> '
@@ -89,7 +89,7 @@ class GameLogic:
                                    GameLogic.current_set['Category'][next_word],
                                    GameLogic.current_set['Question'][next_word])
 
-            action = input(Icons.INPUT.value).lower()
+            action = input(Icon.INPUT.value).lower()
             if action == 's':
                 right = GameScreen.print_round_answer(
                         GameLogic.current_set['Category'][next_word],
@@ -194,11 +194,11 @@ class GameScreen:
         # border
 
         screen += '\n' * (border)
-        screen += center_text(Icons.BOX_H.value * text_width, (Icons.BOX_UL.value, Icons.BOX_UR.value)) + '\n'
-        screen += (center_text('', (Icons.BOX_V.value, Icons.BOX_V.value)) + '\n') * (padding_up - 1)
-        screen += ''.join(center_text(option, (Icons.BOX_V.value, Icons.BOX_V.value)) + '\n' for option in options)
-        screen += (center_text('', (Icons.BOX_V.value, Icons.BOX_V.value)) + '\n') * (padding_down - 1)
-        screen += center_text(Icons.BOX_H.value * text_width, (Icons.BOX_BL.value, Icons.BOX_BR.value)) + '\n'
+        screen += center_text(Icon.BOX_H.value * text_width, (Icon.BOX_UL.value, Icon.BOX_UR.value)) + '\n'
+        screen += (center_text('', (Icon.BOX_V.value, Icon.BOX_V.value)) + '\n') * (padding_up - 1)
+        screen += ''.join(center_text(option, (Icon.BOX_V.value, Icon.BOX_V.value)) + '\n' for option in options)
+        screen += (center_text('', (Icon.BOX_V.value, Icon.BOX_V.value)) + '\n') * (padding_down - 1)
+        screen += center_text(Icon.BOX_H.value * text_width, (Icon.BOX_BL.value, Icon.BOX_BR.value)) + '\n'
         screen += '\n' * (border - 1)
 
         print(screen)
@@ -242,11 +242,11 @@ class GameScreen:
                                GameLogic.current_set['Correct']):
 
             if right:
-                set_indexcons.append(Icons.CORRECT.value.center(wcswidth(word)
-                    + GameScreen.ansi_len(Icons.CORRECT.value)))
+                set_indexcons.append(Icon.CORRECT.value.center(wcswidth(word)
+                    + GameScreen.ansi_len(Icon.CORRECT.value)))
             else:
-                set_indexcons.append(Icons.WRONG.value.center(wcswidth(word)
-                    + GameScreen.ansi_len(Icons.CORRECT.value)))
+                set_indexcons.append(Icon.WRONG.value.center(wcswidth(word)
+                    + GameScreen.ansi_len(Icon.CORRECT.value)))
 
         options = [
             f'Current set {GameLogic.set_index}/{len(Game.deck_df)}',
@@ -308,7 +308,7 @@ class GameScreen:
         GameScreen.print_rows(options)
 
         while 1:
-            action = input(Icons.INPUT.value).lower()
+            action = input(Icon.INPUT.value).lower()
             if action == 'k':
                 return True
             elif action == 'd':
@@ -404,7 +404,7 @@ class Game:
     # Main menu
     def menu(self) -> None:
         GameScreen.print_menu()
-        action = input(Icons.INPUT.value).lower()
+        action = input(Icon.INPUT.value).lower()
         try:
             Game.state = State(action)
         except Exception:
@@ -418,7 +418,7 @@ class Game:
         deck_list = os.listdir(Game.deck_folder)
         GameScreen.print_set_deck(deck_list)
 
-        chosen_deck = input(Icons.INPUT.value)
+        chosen_deck = input(Icon.INPUT.value)
         if not chosen_deck.isnumeric():
             Game.invalid = True
             return
@@ -447,7 +447,7 @@ class Game:
             return
 
         GameScreen.print_game_menu()
-        action = input(Icons.INPUT.value).lower()
+        action = input(Icon.INPUT.value).lower()
         if action == 'n':
             if GameLogic.set_index < len(Game.deck_df):
                 GameLogic.set_index += GameLogic.set_size
@@ -464,7 +464,7 @@ class Game:
     # Config
     def config(self) -> None:
         GameScreen.print_config()
-        action = input(Icons.INPUT.value).lower()
+        action = input(Icon.INPUT.value).lower()
         if action == 's':
             self.set_set_size()
         elif action == 'l':
@@ -476,7 +476,7 @@ class Game:
 
     def learning_algorithms(self):
         GameScreen.print_learning_algorithms()
-        action = input(Icons.INPUT.value).lower()
+        action = input(Icon.INPUT.value).lower()
         try:
             Game.Mode = Mode(action)
         except Exception:
@@ -486,7 +486,7 @@ class Game:
         options = ['New size:']
         GameScreen.print_rows(options)
 
-        set_size = input(Icons.INPUT.value)
+        set_size = input(Icon.INPUT.value)
         if not set_size.isnumeric():
             Game.invalid = True
             return
