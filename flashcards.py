@@ -1,3 +1,4 @@
+from __future__ import annotations
 from random import shuffle
 from re import escape, sub
 from wcwidth import wcswidth
