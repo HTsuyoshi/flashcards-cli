@@ -23,3 +23,7 @@ class Icon(Enum):
     BOX_BR = '┘'
     BOX_BL = '└'
 
+class Algorithm(Enum):
+    SETS = 0
+    SM2P = 1
+
