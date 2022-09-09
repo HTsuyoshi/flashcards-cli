@@ -62,7 +62,7 @@ class Algorithm(Enum):
     SM2P = 1
 
 
-class GameLogic:
+class Logic:
     set_size: int = 10
     set_index: int = 0
     correct_answers: int = 0
@@ -73,32 +73,32 @@ class GameLogic:
     @classmethod
     def play(cls):
         list_order = [
-            *range(GameLogic.set_index,
-                GameLogic.set_index
-                + min(GameLogic.set_size,
-                      len(Game.deck_df) - GameLogic.set_index)
+            *range(Logic.set_index,
+                Logic.set_index
+                + min(Logic.set_size,
+                      len(Game.deck_df) - Logic.set_index)
             )]
         already_answered = []
 
-        GameLogic.correct_answers, GameLogic.wrong_answers = 0, 0
+        Logic.correct_answers, Logic.wrong_answers = 0, 0
         shuffle(list_order)
 
         while len(list_order) > 0:
             next_word = list_order[0]
             GameScreen.print_round(len(list_order),
-                                   GameLogic.current_set['Category'][next_word],
-                                   GameLogic.current_set['Question'][next_word])
+                                   Logic.current_set['Category'][next_word],
+                                   Logic.current_set['Question'][next_word])
 
             action = input(Icon.INPUT.value).lower()
             if action == 's':
                 right = GameScreen.print_round_answer(
-                        GameLogic.current_set['Category'][next_word],
-                        GameLogic.current_set['Question'][next_word],
-                        GameLogic.current_set['Answer'][next_word]
+                        Logic.current_set['Category'][next_word],
+                        Logic.current_set['Question'][next_word],
+                        Logic.current_set['Answer'][next_word]
                         )
                 if right:
                     if next_word not in already_answered:
-                        GameLogic.correct_answers += 1
+                        Logic.correct_answers += 1
                         already_answered.append(next_word)
                     Game.deck_df['Correct'][next_word] = 1
                     Game.deck_df.to_csv(Game.deck_path, index=False)
@@ -106,7 +106,7 @@ class GameLogic:
                     continue
 
                 if next_word not in already_answered:
-                    GameLogic.wrong_answers += 1
+                    Logic.wrong_answers += 1
                     already_answered.append(next_word)
                 shuffle(list_order)
             if action == 'c':
@@ -233,13 +233,13 @@ class GameScreen:
 
     @classmethod
     def print_game_menu(cls) -> None:
-        last: int = min(GameLogic.set_index
-                        + GameLogic.set_size, len(Game.deck_df)) - 1
-        GameLogic.current_set = Game.deck_df.loc[GameLogic.set_index: last]
+        last: int = min(Logic.set_index
+                        + Logic.set_size, len(Game.deck_df)) - 1
+        Logic.current_set = Game.deck_df.loc[Logic.set_index: last]
 
         set_indexcons = []
-        for word, right in zip(GameLogic.current_set['Question'],
-                               GameLogic.current_set['Correct']):
+        for word, right in zip(Logic.current_set['Question'],
+                               Logic.current_set['Correct']):
 
             if right:
                 set_indexcons.append(Icon.CORRECT.value.center(wcswidth(word)
@@ -249,9 +249,9 @@ class GameScreen:
                     + GameScreen.ansi_len(Icon.CORRECT.value)))
 
         options = [
-            f'Current set {GameLogic.set_index}/{len(Game.deck_df)}',
+            f'Current set {Logic.set_index}/{len(Game.deck_df)}',
             '',
-            '  '.join(GameLogic.current_set['Question']),
+            '  '.join(Logic.current_set['Question']),
             '  '.join(set_indexcons),
             '',
             ]
@@ -262,7 +262,7 @@ class GameScreen:
             '[G]o [C]hange Deck',
             ])
         options.extend([
-            f'{GameLogic.correct_answers}/{GameLogic.set_size}'
+            f'{Logic.correct_answers}/{Logic.set_size}'
             ])
 
         GameScreen.print_rows(options)
@@ -283,8 +283,8 @@ class GameScreen:
             '',
             ])
         options.extend([
-            f'Correct: {GameLogic.correct_answers} '
-            f'Wrong: {GameLogic.wrong_answers}',
+            f'Correct: {Logic.correct_answers} '
+            f'Wrong: {Logic.wrong_answers}',
             f'Left: {words_left}'
             ])
         GameScreen.print_rows(options)
@@ -354,8 +354,8 @@ class GameScreen:
         options = [
             'Configuration',
             '',
-            f'Algorithm: {GameLogic.Mode}',
-            f'Set size: {GameLogic.set_size}',
+            f'Algorithm: {Logic.Mode}',
+            f'Set size: {Logic.set_size}',
             ''
             ]
         options.extend(
@@ -449,13 +449,13 @@ class Game:
         GameScreen.print_game_menu()
         action = input(Icon.INPUT.value).lower()
         if action == 'n':
-            if GameLogic.set_index < len(Game.deck_df):
-                GameLogic.set_index += GameLogic.set_size
+            if Logic.set_index < len(Game.deck_df):
+                Logic.set_index += Logic.set_size
         elif action == 'b':
-            if GameLogic.set_index - GameLogic.set_size >= 0:
-                GameLogic.set_index -= GameLogic.set_size
+            if Logic.set_index - Logic.set_size >= 0:
+                Logic.set_index -= Logic.set_size
         elif action == 'g':
-            GameLogic.play()
+            Logic.play()
         elif action == 'c':
             Game.state = State.menu
         else:
@@ -495,7 +495,7 @@ class Game:
             Game.invalid = True
             return
 
-        GameLogic.set_size = int(set_size)
+        Logic.set_size = int(set_size)
 
 
 if __name__ == '__main__':
