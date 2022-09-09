@@ -57,7 +57,7 @@ class Icon(Enum):
     BOX_BL = '└'
 
 
-class Algorithms(Enum):
+class Algorithm(Enum):
     SETS = 0
     SM2P = 1
 
