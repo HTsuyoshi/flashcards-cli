@@ -341,6 +341,8 @@ class Screen:
         if Game.invalid:
             options.extend(['', Screen.INVALID_INPUT])
             Game.invalid = False
+        
+        Screen.print_rows(options)
 
 class Game:
     state: State = State.menu
