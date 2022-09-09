@@ -6,3 +6,7 @@ class State(Enum):
     playing = 'e'
     config = 'c'
     quit = 'q'
+
+class Mode(Enum):
+    bySets = 0
+    sm2plus = 1
